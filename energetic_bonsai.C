@@ -142,15 +142,15 @@ int energetic_bonsai(char *filename="../wcsim.root", bool verbose=false) {
 			}
 
 			// create a copy of tCorrected
-			float tCorrectedSort[500];
-			for (int i=0;i<500;i++) {
+			float tCorrectedSort[ncherenkovdigihits];
+			for (int i=0;i<ncherenkovdigihits;i++) {
 				tCorrectedSort[i] = tCorrected[i];
 			}
 
 			// sort tCorrectedSort array into ascending order
 			int tmp;
-			for (int i=0;i<500;i++) {
-				for (int j=i+1;j<500;j++) {
+			for (int i=0;i<ncherenkovdigihits;i++) {
+				for (int j=i+1;j<ncherenkovdigihits;j++) {
 					if (tCorrectedSort[i] > tCorrectedSort[j]) {
 						tmp = tCorrectedSort[i];
 						tCorrectedSort[i] = tCorrectedSort[j];
@@ -159,17 +159,17 @@ int energetic_bonsai(char *filename="../wcsim.root", bool verbose=false) {
 				}
 			}
 
-			int n50[500];
-			int n100[500];
+			int n50[ncherenkovdigihits];
+			int n100[ncherenkovdigihits];
 
 			// look for the 50 ns interval with the maximum total number of hits --> start time: tMin
 			float tMin;
-			int n50tmp;
-			int n100tmp;
+			int n50tmp = 0;
+			int n100tmp = 0;
 
-			for (int i=0;i<500;i++) { // loop through tCorrectedSort array: take each element as tMin and find 50 and 100 ns window
+			for (int i=0;i<ncherenkovdigihits;i++) { // loop through tCorrectedSort array: take each element as tMin and find 50 and 100 ns window
 				tMin = tCorrectedSort[i];
-				for (int j=i;j<500;j++) { // loop over tCorrected array to find number of hits in each window
+				for (int j=i;j<ncherenkovdigihits;j++) { // loop over tCorrected array to find number of hits in each window
 					if (tMin < tCorrectedSort[j] && tCorrectedSort[j] < tMin + 100) {
 						n100tmp++;
 						if (tCorrectedSort[j] < tMin + 50) n50tmp++;
@@ -187,7 +187,7 @@ int energetic_bonsai(char *filename="../wcsim.root", bool verbose=false) {
 			int n50Max = 0;
 			int iValue;
 
-			for (int i=0;i<500;i++) { //Loop through elements in the n50 array
+			for (int i=0;i<ncherenkovdigihits;i++) { //Loop through elements in the n50 array
 				if (n50[i] > n50Max) {
 					n50Max = n50[i];
 					iValue = i;
@@ -197,8 +197,8 @@ int energetic_bonsai(char *filename="../wcsim.root", bool verbose=false) {
 			// find the number of hits in the 100 ns interval corresponding to the maximal 50 ns window
 			int n100Max = n100[iValue];
 
-			float distance50[500];
-			int tubeID[500];
+			float distance50[ncherenkovdigihits];
+			int tubeID[ncherenkovdigihits];
 			int j=0;
 			// create arrays of distance from vertex in cm and tubeID for each hit in maximal interval
 			// NB arrays have 500 elements but only nMax50 elements are required
@@ -225,7 +225,7 @@ int energetic_bonsai(char *filename="../wcsim.root", bool verbose=false) {
 			float nEff = 0; // effective number of hits
 			float occupancy;
 			float eRecArray[500];
-			for (i=0;i<n50Max;i++) { // loop over hits in 50 ns interval and calculate nEff
+			for (int i=0;i<n50Max;i++) { // loop over hits in 50 ns interval and calculate nEff
 				WCSimRootPMT pmt = geo->GetPMT(tubeID[i]);
 				float x = pmt.GetPosition(0);
 				float y = pmt.GetPosition(1);
